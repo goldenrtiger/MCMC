@@ -2,6 +2,9 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
+isPlot = False
 
 print(f">> ---- start --------- {tf.__version__}")
 
@@ -12,16 +15,43 @@ tfd = tfp.distributions
 def make_training_data(num_samples, dims, params):
     '''
     s * fm ** a * Zn ** b * c / Vr ** d
+    Dnozzle: diameter of nozzle
+    fm: flow speed
+    Zn: nozzle height
+    Vr: printing velocity
+    Zratio: Zn / Dnozzle
     '''
     dt = np.asarray(params).dtype
-    x = np.abs(np.random.randn(dims, num_samples).astype(dt)) # measurement data
+    x = np.abs(np.random.rand(dims, num_samples).astype(dt) )  # measurement data
     w = np.abs(params)   # params
-    noise = np.random.randn(num_samples).astype(dt)
+    # noise = np.random.randn(num_samples).astype(dt)
+    noise = np.random.normal(0, 0.2, num_samples).astype(dt) 
 
     [ s, fm, Zn, Vr ] = x
     [ a, b, c, d ] = w
 
-    y = s* tf.math.pow(fm, a) * tf.math.pow(Zn, b) * c / tf.math.pow(Vr, d) + noise[0]
+    y_ = s* tf.math.pow(fm, a) * tf.math.pow(Zn, b) * c / tf.math.pow(Vr, d)
+    y = y_ + noise[0]
+
+    if isPlot:
+        data = [[noise], [y], [y_]]
+        fig, axes = plt.subplots(nrows=3,ncols=1)
+        ax0, ax1, ax2 = axes.flatten()
+        ax0.hist(noise, 10, density=True, histtype='bar', color='blue', label=['noise'])
+        ax0.legend(prop={'size': 10})
+        ax0.set_title('N(0, 0.5*0.5)')
+
+        ax1.hist(y_, 10, density=True, histtype='bar', color='tan', label=['data'])
+        ax1.legend(prop={'size': 10})
+        ax1.set_title('s * fm ** a * Zn ** b * c / Vr ** d')
+
+        ax2.hist(y, 10, density=True, histtype='bar', color='red', label=['noisy data'])
+        ax2.legend(prop={'size': 10})
+        ax2.set_title('s * fm ** a * Zn ** b * c / Vr ** d + N(0, 0.5*0.5)')
+
+        fig.tight_layout()
+        plt.show()
+
     return y, x, w
 
 def make_weights_prior(dims, mean, log_sigma):
@@ -38,26 +68,19 @@ def make_response_likelihood(w, x):
 
 # Setup assumptions.
 dtype = np.float32
-num_samples = 500 # 100 is awful, 10 is fine
+num_samples = 100 
 dims = 4
 tf.compat.v1.random.set_random_seed(10014)
 np.random.seed(10014)
 
-params = np.array([1] * 4, dtype) 
+params = np.array([1.1, 2.1, 2.4, 1.7], dtype) 
 y, x, _ = make_training_data(
     num_samples, dims, params)
 
-log_sigma = tf.Variable(0., dtype=dtype, name='log_sigma')
-mean = tf.Variable([1., 1., 1., 1.])
+log_sigma = tf.Variable(5., dtype=dtype, name='log_sigma') # parameters sigma
+mean = tf.Variable([1., 2., 2., 2.]) # parameters mean
 
 optimizer = tf.optimizers.SGD(learning_rate=0.0001)
-
-prior_ = make_weights_prior(dims, mean, log_sigma)
-def unnormalized_posterior_log_prob_test(w):
-    likelihood = make_response_likelihood(w, x)
-    return (
-        prior_.log_prob(w) +
-        tf.reduce_sum(likelihood.log_prob(y), axis=-1))  # [m]
 
 @tf.function
 def mcem_iter(weights_chain_start, step_size):
@@ -109,15 +132,13 @@ def mcem_iter(weights_chain_start, step_size):
   return (weights_prior_estimated_scale, weights[-1], loss,
           step_size[-1], avg_acceptance_ratio)
 
-num_iters = int(2000)
+num_iters = int(20000)
 
 weights_prior_estimated_scale_ = np.zeros((num_iters), dtype)
 weights_ = np.zeros([num_iters + 1, dims], dtype) # initial 
 loss_ = np.zeros([num_iters], dtype)
 weights_[0] = np.random.randn(dims).astype(dtype)
-step_size_ = 0.0006 # 0.0001
-
-unnormalized_posterior_log_prob_test(weights_[0])
+step_size_ = 0.0001 # 0.006
 
 for iter_ in range(num_iters):
     [
