@@ -12,7 +12,7 @@
 # exmaples
     - (1) hmc in abs_MCMC_example.py
     - (2) tf_hmc in abs_tf_hmc_example.py
-    - (3) libGaussian.py, libMCMC.py, MCMC_example.py
+    - (3) example\ libGaussian.py, libMCMC.py, MCMC_example.py
 
 # docs:
 * The Matrix Cookbook [download] (https://drive.google.com/drive/folders/1j9B-nv2m88yDVY-iQH9mGYY2YY8uDvXm)
