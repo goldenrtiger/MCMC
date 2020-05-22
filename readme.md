@@ -14,8 +14,8 @@
     - (2) example\ libGaussian.py, libMCMC.py, MCMC_example.py
 
 # docs:
-* The Matrix Cookbook [download] (https://drive.google.com/drive/folders/1j9B-nv2m88yDVY-iQH9mGYY2YY8uDvXm)
-* MCMC using Hamiltonian dynamics [download] (https://drive.google.com/drive/folders/1j9k4AubFnvfvCP2Z18yIqdGuTMMChpa6)
+* The Matrix Cookbook [download](https://drive.google.com/drive/folders/1j9B-nv2m88yDVY-iQH9mGYY2YY8uDvXm)
+* MCMC using Hamiltonian dynamics [download](https://drive.google.com/drive/folders/1j9k4AubFnvfvCP2Z18yIqdGuTMMChpa6)
 
 
 # Contact
