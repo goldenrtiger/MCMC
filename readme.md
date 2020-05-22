@@ -10,25 +10,14 @@
     - matplotlib
 
 # exmaples
-    - hmc in abs_MCMC_example.py
-    - tf_hmc in abs_tf_hmc_example.py
+    - (1) hmc in abs_MCMC_example.py
+    - (2) tf_hmc in abs_tf_hmc_example.py
+    - (3) libGaussian.py, libMCMC.py, MCMC_example.py
 
-# formulas
-    > estimate parameters
+# docs:
+* The Matrix Cookbook [download] (https://drive.google.com/drive/folders/1j9B-nv2m88yDVY-iQH9mGYY2YY8uDvXm)
+* MCMC using Hamiltonian dynamics [download] (https://drive.google.com/drive/folders/1j9k4AubFnvfvCP2Z18yIqdGuTMMChpa6)
 
-    > s: nozzle size
-    > fm: extrusion speed
-    > Vr: printing speed
-    > Zn: nozzle offset
-    > 
-    > observation: [s, fm, Vr, Zn]
-    > y: targeted width
-    > 
-    > f(w|a, b, c, d) = s * fm ** a * Zn ** b * c / Vr ** d 
-    > p(w|a, b, c, d) = (s * fm ** a * Zn ** b * c / Vr ** d) 
-    > params: [a, b, c, d]
-    > 
-    > 
 
 # Contact
     Welcome for comments and further discussions.
